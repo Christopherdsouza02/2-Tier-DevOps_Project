@@ -18,7 +18,7 @@ pipeline{
         }
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f two-tier-app-deployment.yml'
+                kubectl apply -f k8s/two-tier-app-deployment.yml
             }
         }
     }
