@@ -19,7 +19,6 @@ pipeline{
         }
         stage('Push Docker Image'){
             steps{
-                sh 'docker tag flaskapp cdsouza404/flaskapp:v8'
                 sh 'docker push cdsouza404/flaskapp:v8'
             }
         }
