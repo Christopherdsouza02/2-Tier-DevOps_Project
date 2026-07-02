@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "cdsouza404/flaskapp"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+    }
+
     stages {
 
         stage('Clone Repo') {
@@ -12,7 +17,7 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                sh 'docker build -t cdsouza404/flaskapp:v8 .'
+                sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
             }
         }
 
@@ -25,7 +30,7 @@ pipeline {
                 )]) {
                     sh '''
                     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    docker push cdsouza404/flaskapp:v8
+                    docker push ${IMAGE_NAME}:${IMAGE_TAG}
                     '''
                 }
             }
@@ -34,6 +39,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh 'kubectl apply -f k8s/two-tier-app-deployment.yml'
+                sh 'kubectl rollout restart deployment two-tier-app'
             }
         }
     }
