@@ -1,11 +1,5 @@
 pipeline{
     agent any
-
-     environment {
-        DOCKER_IMAGE = "cdsoouza404/flaskapp"
-        IMAGE_TAG = "${BUILD_NUMBER}"
-    }
-    
     stages{
         stage('Clone repo'){
             steps{
