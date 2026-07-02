@@ -1,24 +1,39 @@
-pipeline{
+pipeline {
     agent any
-    stages{
-        stage('Clone repo'){
-            steps{
-                git branch: 'main', url: 'https://github.com/Christopherdsouza02/2-Tier-DevOps_Project.git'
+
+    stages {
+
+        stage('Clone Repo') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/Christopherdsouza02/2-Tier-DevOps_Project.git'
             }
         }
-        stage('Build image'){
-            steps{
+
+        stage('Build Image') {
+            steps {
                 sh 'docker build -t cdsouza404/flaskapp:v8 .'
             }
         }
-        stage('Push Docker Image'){
-            steps{
-                sh 'docker push cdsouza404/flaskapp:v8'
+
+        stage('Docker Login & Push Image') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    docker push cdsouza404/flaskapp:v8
+                    '''
+                }
             }
         }
+
         stage('Deploy to Kubernetes') {
             steps {
-               sh 'kubectl apply -f k8s/two-tier-app-deployment.yml'
+                sh 'kubectl apply -f k8s/two-tier-app-deployment.yml'
             }
         }
     }
