@@ -1,5 +1,11 @@
 pipeline{
     agent any
+
+     environment {
+        DOCKER_IMAGE = "cdsoouza404/flaskapp"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+    }
+    
     stages{
         stage('Clone repo'){
             steps{
@@ -8,15 +14,19 @@ pipeline{
         }
         stage('Build image'){
             steps{
-                sh 'docker build -t flask-app .'
+                sh 'docker build -t cdsouza404/flaskapp:v8 .'
             }
         }
-        stage('Deploy with docker compose'){
+        stage('Push Docker Image'){
             steps{
-                // existing container if they are running
-                sh 'docker compose down || true'
-                // start app, rebuilding flask image
-                sh 'docker compose up -d --build'
+                sh 'docker tag flaskapp cdsouza404/flaskapp:v8'
+                sh 'docker push cdsouza404/flaskapp:v8'
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f two-tier-app-deployment.yml'
+                sh 'kubectl apply -f two-tier-app-svc.yml'
             }
         }
     }
