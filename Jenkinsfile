@@ -17,7 +17,7 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
             }
         }
 
@@ -28,18 +28,20 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh '''
+                    sh """
                     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                     docker push ${IMAGE_NAME}:${IMAGE_TAG}
-                    '''
+                    """
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/two-tier-app-deployment.yml'
-                sh 'kubectl rollout restart deployment two-tier-app'
+                sh """
+                kubectl set image deployment/two-tier-app \
+                two-tier-app=${IMAGE_NAME}:${IMAGE_TAG}
+                """
             }
         }
     }
