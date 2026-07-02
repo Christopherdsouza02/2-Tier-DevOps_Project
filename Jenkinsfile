@@ -42,6 +42,7 @@ pipeline {
                 kubectl set image deployment/two-tier-app \
                 two-tier-app=${IMAGE_NAME}:${IMAGE_TAG}
                 """
+                sh "kubectl rollout status deployment/two-tier-app"
             }
         }
     }
