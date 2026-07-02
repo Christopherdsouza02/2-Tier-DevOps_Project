@@ -7,14 +7,7 @@ pipeline {
     }
 
     stages {
-
-        stage('Clone Repo') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/Christopherdsouza02/2-Tier-DevOps_Project.git'
-            }
-        }
-
+        
         stage('Build Image') {
             steps {
                 sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
