@@ -7,6 +7,13 @@ pipeline {
     }
 
     stages {
+
+        stage('Checkout Source Code') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/Christopherdsouza02/2-Tier-DevOps_Project.git'
+            }
+        }
         
         stage('Build Image') {
             steps {
